@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <linearGradient id="p2Bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121212"/>
+      <stop offset="100%" stop-color="#1e1e1e"/>
+    </linearGradient>
+    <linearGradient id="spotifyGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1db954"/>
+      <stop offset="100%" stop-color="#1aa34a"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#p2Bg)"/>
+  <!-- Music Radar UI -->
+  <rect x="40" y="30" width="520" height="45" rx="10" fill="#282828"/>
+  <circle cx="65" cy="52" r="5" fill="#ef4444"/>
+  <circle cx="80" cy="52" r="5" fill="#f59e0b"/>
+  <circle cx="95" cy="52" r="5" fill="#10b981"/>
+  <text x="300" y="57" fill="#b3b3b3" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle">Spotify Release Radar Sync</text>
+  <!-- Main card -->
+  <rect x="40" y="95" width="520" height="275" rx="14" fill="#181818" stroke="#282828" stroke-width="1"/>
+  <!-- Track list -->
+  <circle cx="80" cy="140" r="24" fill="url(#spotifyGreen)"/>
+  <polygon points="76,130 90,140 76,150" fill="#ffffff"/>
+  <text x="120" y="137" fill="#ffffff" font-family="system-ui, sans-serif" font-size="15" font-weight="600">Automated Release Radar v2.0</text>
+  <text x="120" y="155" fill="#b3b3b3" font-family="system-ui, sans-serif" font-size="12">Synced 48 new releases from 12 followed artists</text>
+  <!-- Track item 1 -->
+  <rect x="65" y="185" width="470" height="48" rx="8" fill="#242424"/>
+  <rect x="75" y="195" width="28" height="28" rx="4" fill="#3b82f6"/>
+  <text x="115" y="213" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13">Midnight Horizons</text>
+  <text x="490" y="213" fill="#1db954" font-family="system-ui, sans-serif" font-size="12" text-anchor="end">Synced ●</text>
+  <!-- Track item 2 -->
+  <rect x="65" y="245" width="470" height="48" rx="8" fill="#242424"/>
+  <rect x="75" y="255" width="28" height="28" rx="4" fill="#ec4899"/>
+  <text x="115" y="273" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13">Neon Signals (LP)</text>
+  <text x="490" y="273" fill="#1db954" font-family="system-ui, sans-serif" font-size="12" text-anchor="end">Synced ●</text>
+  <!-- Track item 3 -->
+  <rect x="65" y="305" width="470" height="48" rx="8" fill="#242424"/>
+  <rect x="75" y="315" width="28" height="28" rx="4" fill="#f59e0b"/>
+  <text x="115" y="333" fill="#ffffff" font-family="system-ui, sans-serif" font-size="13">Quantum Reverie</text>
+  <text x="490" y="333" fill="#1db954" font-family="system-ui, sans-serif" font-size="12" text-anchor="end">Synced ●</text>
+</svg>

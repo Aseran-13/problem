@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <linearGradient id="p1Bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="p1Bar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="24" fill="url(#p1Bg)"/>
+  <!-- App Header -->
+  <rect x="40" y="30" width="520" height="45" rx="10" fill="#334155"/>
+  <circle cx="65" cy="52" r="5" fill="#ef4444"/>
+  <circle cx="80" cy="52" r="5" fill="#f59e0b"/>
+  <circle cx="95" cy="52" r="5" fill="#10b981"/>
+  <text x="300" y="57" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle">FinTrack Analytics Dashboard</text>
+  <!-- Card 1: Balance -->
+  <rect x="40" y="95" width="245" height="100" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="60" y="125" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="12">Total Balance</text>
+  <text x="60" y="160" fill="#f8fafc" font-family="system-ui, sans-serif" font-size="24" font-weight="700">$34,820.50</text>
+  <!-- Card 2: Growth -->
+  <rect x="315" y="95" width="245" height="100" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="335" y="125" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="12">Monthly Savings</text>
+  <text x="335" y="160" fill="#10b981" font-family="system-ui, sans-serif" font-size="24" font-weight="700">+24.8% ▲</text>
+  <!-- Chart area -->
+  <rect x="40" y="215" width="520" height="155" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <path d="M 60 320 Q 140 260, 200 290 T 340 240 T 460 270 T 520 230" fill="none" stroke="url(#p1Bar)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="520" cy="230" r="5" fill="#10b981"/>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="aboutBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="32" fill="url(#aboutBg)" stroke="#cbd5e1" stroke-width="2"/>
+  <!-- Workspace illustration -->
+  <rect x="60" y="80" width="280" height="180" rx="12" fill="#1e293b"/>
+  <rect x="70" y="90" width="260" height="150" rx="8" fill="#0f172a"/>
+  <!-- Code lines on monitor -->
+  <circle cx="85" cy="102" r="4" fill="#ef4444"/>
+  <circle cx="97" cy="102" r="4" fill="#f59e0b"/>
+  <circle cx="109" cy="102" r="4" fill="#10b981"/>
+  <rect x="85" y="120" width="80" height="8" rx="4" fill="#60a5fa"/>
+  <rect x="175" y="120" width="110" height="8" rx="4" fill="#94a3b8"/>
+  <rect x="100" y="140" width="140" height="8" rx="4" fill="#38bdf8"/>
+  <rect x="100" y="160" width="90" height="8" rx="4" fill="#a78bfa"/>
+  <rect x="100" y="180" width="160" height="8" rx="4" fill="#4ade80"/>
+  <rect x="85" y="200" width="60" height="8" rx="4" fill="#f43f5e"/>
+  <!-- Stand -->
+  <rect x="185" y="260" width="30" height="45" fill="#64748b"/>
+  <path d="M150 305 L 250 305 L 265 315 L 135 315 Z" fill="#475569"/>
+  <!-- Desk accessories -->
+  <rect x="70" y="295" width="40" height="30" rx="4" fill="#3b82f6"/>
+  <circle cx="320" cy="305" r="16" fill="#fbbf24"/>
+  <path d="M312 305 L 328 305" stroke="#78350f" stroke-width="2"/>
+</svg>

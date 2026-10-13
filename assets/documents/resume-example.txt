@@ -1,0 +1,19 @@
+# ALEX MORGAN — Full Stack Software Engineer
+Email: alex.morgan@example.com | Phone: +1 (555) 234-5678
+GitHub: github.com/alexmorgan | LinkedIn: linkedin.com/in/alexmorgan
+
+SUMMARY
+Software Engineer with 3+ years of experience engineering high-performance web applications, distributed backend services, and interactive user interfaces.
+
+EXPERIENCE
+TechNova Solutions — Frontend Engineer (2023 - Present)
+- Architected enterprise client portal serving 50k+ daily active users.
+- Reduced initial load times by 42% through lazy loading, code-splitting, and asset optimization.
+
+CloudCore Labs — Software Developer Intern (2022 - 2023)
+- Engineered scalable RESTful microservices with Node.js and PostgreSQL.
+- Implemented automated end-to-end integration test suites with 94% coverage.
+
+EDUCATION
+University of California, Berkeley — B.S. in Computer Science (2019 - 2023)
+Dean's Honor List

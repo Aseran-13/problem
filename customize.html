@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Studio & Builder</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a;
+      --muted: #64748b; --primary: #18181b; --danger: #ef4444;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Topbar */
+    .topbar { height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem; flex-shrink: 0; z-index: 10; }
+    .brand { font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; }
+    .btn { padding: 7px 14px; font-size: 0.85rem; font-weight: 500; font-family: inherit; border-radius: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: all 150ms; display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { background: #f1f5f9; }
+    .btn-primary { background: #18181b; color: #fff; border-color: #18181b; }
+    .btn-primary:hover { background: #000; }
+    .btn-danger { color: var(--danger); }
+    .btn-danger:hover { background: #fef2f2; border-color: #fecaca; }
+
+    /* Layout */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+    .editor-pane { width: 50%; display: flex; background: var(--surface); border-right: 1px solid var(--border); overflow: hidden; }
+    .sidebar { width: 160px; background: #fafafa; border-right: 1px solid var(--border); padding: 8px 6px; overflow-y: auto; flex-shrink: 0; }
+    .tab-btn { width: 100%; text-align: left; padding: 8px 10px; font-size: 0.82rem; font-weight: 500; font-family: inherit; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: var(--muted); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+    .tab-btn:hover { background: #f0f0f0; color: var(--text); }
+    .tab-btn.active { background: #18181b; color: #fff; font-weight: 600; }
+    .forms-container { flex: 1; padding: 1.5rem; overflow-y: auto; }
+    
+    /* Form components */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .tab-header { margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .tab-title { font-size: 1.25rem; font-weight: 700; }
+    .form-group { margin-bottom: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; color: #334155; }
+    .form-input, .form-textarea, .form-select { width: 100%; padding: 8px 10px; font-size: 0.85rem; font-family: inherit; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+    .form-textarea { min-height: 80px; resize: vertical; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: #18181b; }
+    
+    /* Repeatable cards */
+    .item-card { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; position: relative; }
+    .item-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; }
+    .item-del-btn { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; }
+    .item-del-btn:hover { color: var(--danger); background: #fee2e2; }
+    .add-btn { background: #18181b; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-family: inherit; margin-bottom: 8px; }
+
+    /* Switch */
+    .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    
+    /* Preview Pane */
+    .preview-pane { width: 50%; background: #cbd5e1; display: flex; flex-direction: column; overflow: hidden; }
+    .preview-bar { height: 44px; background: #f8fafc; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-size: 0.75rem; color: var(--muted); }
+    .device-btns { display: flex; gap: 4px; background: #e2e8f0; padding: 2px; border-radius: 6px; }
+    .device-btn { border: none; background: transparent; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; color: var(--muted); }
+    .device-btn.active { background: #fff; color: var(--text); }
+    .preview-frame-container { flex: 1; padding: 1rem; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .preview-wrapper { width: 100%; height: 100%; background: #fff; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); overflow: hidden; transition: width 200ms ease; }
+    .preview-wrapper.tablet { width: 768px; }
+    .preview-wrapper.mobile { width: 375px; height: 92%; border-radius: 24px; border: 6px solid #1e293b; }
+    iframe { width: 100%; height: 100%; border: none; }
+    
+    /* Toast */
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); background: #18181b; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; transition: transform 250ms ease; z-index: 100; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Builder Responsive Rules */
+    @media (max-width: 900px) {
+      .workspace { flex-direction: column; overflow-y: auto; }
+      .editor-pane { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 55vh; }
+      .preview-pane { width: 100%; min-height: 45vh; }
+      .preview-wrapper.tablet { width: 100%; max-width: 768px; }
+      .preview-wrapper.mobile { width: min(100%, 375px); }
+    }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 0 0.75rem; height: auto; min-height: 56px; flex-wrap: wrap; gap: 8px; padding-block: 8px; }
+      .topbar-actions { flex-wrap: wrap; }
+      .editor-pane { flex-direction: column; }
+      .sidebar { width: 100%; display: flex; overflow-x: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 4px; }
+      .tab-btn { width: auto; white-space: nowrap; margin-bottom: 0; margin-right: 4px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span>⚙️</span>
+      <span>Portfolio Studio</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="saveDraft()">💾 Save Draft</button>
+      <label class="btn" title="Import draft JSON">
+        📥 Import
+        <input type="file" id="import-input" accept=".json,.html" style="display:none;" onchange="handleImport(event)">
+      </label>
+      <button class="btn btn-primary" onclick="generateIndexHtml()" title="Generate and download standalone index.html">
+        🚀 Generate index.html
+      </button>
+      <button class="btn btn-danger" onclick="resetDefaults()">↺ Reset</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="editor-pane">
+      <nav class="sidebar">
+        <button class="tab-btn active" onclick="setTab('general')">⚙️ General</button>
+        <button class="tab-btn" onclick="setTab('visibility')">👁️ Visibility</button>
+        <button class="tab-btn" onclick="setTab('hero')">👤 Hero</button>
+        <button class="tab-btn" onclick="setTab('about')">📄 About</button>
+        <button class="tab-btn" onclick="setTab('experience')">💼 Experience</button>
+        <button class="tab-btn" onclick="setTab('skills')">⚡ Skills</button>
+        <button class="tab-btn" onclick="setTab('projects')">💻 Projects</button>
+        <button class="tab-btn" onclick="setTab('contact')">📬 Contact</button>
+        <button class="tab-btn" onclick="setTab('footer')">🦶 Footer</button>
+      </nav>
+
+      <div class="forms-container" id="forms-box">
+        <!-- Rendered dynamically by customize script -->
+      </div>
+    </section>
+
+    <section class="preview-pane">
+      <div class="preview-bar">
+        <div class="device-btns">
+          <button class="device-btn active" id="btn-desktop" onclick="setDevice('desktop')">Desktop</button>
+          <button class="device-btn" id="btn-tablet" onclick="setDevice('tablet')">Tablet</button>
+          <button class="device-btn" id="btn-mobile" onclick="setDevice('mobile')">Mobile</button>
+        </div>
+        <span>Live Standalone Preview</span>
+        <button class="device-btn" onclick="updatePreview()">🔄 Refresh</button>
+      </div>
+      <div class="preview-frame-container">
+        <div class="preview-wrapper" id="preview-wrap">
+          <iframe id="preview-iframe" title="Preview Frame"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast-el">Settings updated!</div>
+
+  <script>
+    const DEFAULT_DATA = {
+      site: { title: "Vignesh | CV", favicon: "assets/icons/favicon.svg" },
+      navigation: { logo: "Vignesh Seetharaman" },
+      hero: {
+        enabled: true,
+        greeting: "Hello, I'm",
+        name: "Vignesh Seetharaman",
+        title: "Aspiring Supply chain & Operations Analyst",
+        description: "Supply chain enthusiast turning data into smarter decisions and efficient operations. Building expertise across analytics, business intelligence, and supply chain technology.",
+        profileImage: "assets/images/herop.png",
+        btn1Text: "Download CV",
+        btn1Url: "assets/documents/resume-example.txt",
+        btn2Text: "Contact Info",
+        btn2Url: "#contact",
+        linkedin: "https://linkedin.com/in/vigneshseetha",
+        github: "https://github.com/Aseran-13"
+      },
+      about: {
+        enabled: true,
+        eyebrow: "Get To Know More",
+        title: "About Me",
+        profileImage: "assets/images/hero.png",
+        description: "I’m an aspiring supply chain analytics professional with a strong interest in data, business intelligence, and operational optimization. I use Python, SQL, Excel, and Power BI to turn data into insights that support better supply chain decisions.",
+        cards: [
+          { title: "Experience", subtitle: "2 years", detail: "Omega Healthcare Management Services", icon: "assets/icons/experience.svg" },
+          { title: "Education", subtitle: "Bcomm. Logistics & Supply chain Management 2018 - 2021", detail: "CURTIN UNIVERSITY", icon: "assets/icons/education.svg" }
+        ]
+      },
+      experience: {
+        enabled: true,
+        eyebrow: "Explore My",
+        title: "Experience",
+        items: [
+          {
+            role: "Accounts Receivable Executive",
+            company: "Omega Healthcare Management Services, Bengaluru",
+            period: "2016 - 2018",
+            description: "Managed FQHC/FFS accounts, resolving outstanding issues through accurate review and structured follow-up. Handled high-volume workflows, special projects, and supported new team members with process guidance.",
+            skills: "Excel, MS Office, Account Reconciliation, Workflow Optimization"
+          }
+        ]
+      },
+      skills: {
+        enabled: true,
+        eyebrow: "Explore My",
+        title: "Skills",
+        categories: [
+          {
+            title: "Analytics & Data Tools",
+            skills: [
+              { name: "Python", level: "Intermediate" },
+              { name: "SQL", level: "Intermediate" },
+              { name: "Microsoft Excel", level: "Experienced" },
+              { name: "Power BI", level: "Intermediate" },
+              { name: "Tableau", level: "Intermediate" }
+            ]
+          },
+          {
+            title: "Supply Chain & Operations",
+            skills: [
+              { name: "Logistics Management", level: "Experienced" },
+              { name: "Inventory Optimization", level: "Intermediate" },
+              { name: "Process Improvement", level: "Experienced" },
+              { name: "Account Reconciliation", level: "Experienced" },
+              { name: "Workflow Planning", level: "Experienced" }
+            ]
+          }
+        ]
+      },
+      projects: {
+        enabled: true,
+        eyebrow: "Browse My Recent",
+        title: "Projects",
+        items: [
+          {
+            title: "Budget Management",
+            description: "A personal finance management web application designed to track recurring expenses and visualize spending statistics.",
+            image: "assets/images/project-1.svg",
+            technologies: "JavaScript, HTML/CSS, Charts, LocalStorage",
+            github: "https://github.com/",
+            live: "https://github.com/"
+          },
+          {
+            title: "New Releases Tracker",
+            description: "An automated music tracker checking daily for newly dropped singles and albums from followed artists on Spotify.",
+            image: "assets/images/project-2.svg",
+            technologies: "JavaScript, REST API, OAuth 2.0, Node.js",
+            github: "https://github.com/",
+            live: "https://github.com/"
+          },
+          {
+            title: "CloudSync Task Canvas",
+            description: "A lightweight agile Kanban workflow board featuring smooth drag-and-drop, label filtering, and offline persistence.",
+            image: "assets/images/project-3.svg",
+            technologies: "JavaScript, CSS Grid, IndexedDB, Responsive",
+            github: "https://github.com/",
+            live: "https://github.com/"
+          }
+        ]
+      },
+      contact: {
+        enabled: true,
+        eyebrow: "Get in Touch",
+        title: "Contact Me",
+        description: "Open to supply chain, logistics, and analytics opportunities where I can turn data into better operational decisions.",
+        email: "vignesh.lgscm@gmail.com",
+        linkedin: "https://linkedin.com/in/vigneshseetha",
+        github: "https://github.com/aseran-13"
+      },
+      footer: {
+        enabled: true,
+        copyright: "Copyright © 2025 Vignesh Seetharaman. All Rights Reserved."
+      }
+    };
+
+    let state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    let activeTab = "general";
+
+    // Load draft if available
+    const saved = localStorage.getItem("portfolio_builder_draft");
+    if (saved) {
+      try { state = JSON.parse(saved); } catch (e) {}
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast-el");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2000);
+    }
+
+    function saveDraft() {
+      localStorage.setItem("portfolio_builder_draft", JSON.stringify(state));
+      showToast("Draft saved locally!");
+    }
+
+    function resetDefaults() {
+      if (confirm("Reset all settings to default starter data?")) {
+        localStorage.removeItem("portfolio_builder_draft");
+        state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        renderForms();
+        updatePreview();
+        showToast("Reset to defaults!");
+      }
+    }
+
+    function handleImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (parsed && typeof parsed === "object") {
+            state = parsed;
+            renderForms();
+            updatePreview();
+            saveDraft();
+            showToast("Draft imported successfully!");
+          }
+        } catch (err) {
+          alert("Invalid JSON draft file.");
+        }
+      };
+      r.readAsText(file);
+      e.target.value = "";
+    }
+
+    function setTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll(".tab-btn").forEach((b, i) => {
+        const tabs = ["general", "visibility", "hero", "about", "experience", "skills", "projects", "contact", "footer"];
+        if (tabs[i] === tab) b.classList.add("active");
+        else b.classList.remove("active");
+      });
+      renderForms();
+    }
+
+    function setDevice(dev) {
+      const wrap = document.getElementById("preview-wrap");
+      wrap.classList.remove("tablet", "mobile");
+      document.querySelectorAll(".device-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById("btn-" + dev)?.classList.add("active");
+      if (dev !== "desktop") wrap.classList.add(dev);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function renderForms() {
+      const box = document.getElementById("forms-box");
+      if (!box) return;
+
+      if (activeTab === "general") {
+        box.innerHTML = `
+          <div class="tab-header"><h2 class="tab-title">General Site Settings</h2></div>
+          <div class="form-group">
+            <label class="form-label">Website Title</label>
+            <input class="form-input" value="${escapeHtml(state.site.title)}" oninput="state.site.title=this.value; onDataChange();">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Favicon Path / URL</label>
+            <input class="form-input" value="${escapeHtml(state.site.favicon)}" oninput="state.site.favicon=this.value; onDataChange();">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Navigation Brand Text</label>
+            <input class="form-input" value="${escapeHtml(state.navigation.logo)}" oninput="state.navigation.logo=this.value; onDataChange();">
+          </div>
+        `;
+      } else if (activeTab === "visibility") {
+        const secs = [
+          ["hero", "Hero / Profile"],
+          ["about", "About Me"],
+          ["experience", "Experience"],
+          ["skills", "Skills"],
+          ["projects", "Projects"],
+          ["contact", "Contact"],
+          ["footer", "Footer"]
+        ];
+        box.innerHTML = `
+          <div class="tab-header"><h2 class="tab-title">Section Visibility</h2></div>
+          <p style="font-size:0.8rem; color:#64748b; margin-bottom:1rem;">Toggled sections are removed from DOM and navigation with zero leftover whitespace.</p>
+          ${secs.map(([key, label]) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px; background:#fff;">
+              <span style="font-size:0.9rem; font-weight:600;">${label}</span>
+              <input type="checkbox" ${state[key]?.enabled !== false ? "checked" : ""} onchange="state.${key}.enabled = this.checked; onDataChange();">
+            </div>
+          `).join("")}
+        `;
+      } else if (activeTab === "hero") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">Hero Section</h2>
+            <label class="toggle"><input type="checkbox" ${state.hero.enabled !== false ? "checked" : ""} onchange="state.hero.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Greeting</label>
+              <input class="form-input" value="${escapeHtml(state.hero.greeting)}" oninput="state.hero.greeting=this.value; onDataChange();">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" value="${escapeHtml(state.hero.name)}" oninput="state.hero.name=this.value; onDataChange();">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Professional Title</label>
+            <input class="form-input" value="${escapeHtml(state.hero.title)}" oninput="state.hero.title=this.value; onDataChange();">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Profile Image Path</label>
+            <input class="form-input" value="${escapeHtml(state.hero.profileImage)}" oninput="state.hero.profileImage=this.value; onDataChange();">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bio Description</label>
+            <textarea class="form-textarea" oninput="state.hero.description=this.value; onDataChange();">${escapeHtml(state.hero.description)}</textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Primary Button Text</label>
+              <input class="form-input" value="${escapeHtml(state.hero.btn1Text)}" oninput="state.hero.btn1Text=this.value; onDataChange();">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Primary Button URL</label>
+              <input class="form-input" value="${escapeHtml(state.hero.btn1Url)}" oninput="state.hero.btn1Url=this.value; onDataChange();">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">LinkedIn URL</label>
+              <input class="form-input" value="${escapeHtml(state.hero.linkedin)}" oninput="state.hero.linkedin=this.value; onDataChange();">
+            </div>
+            <div class="form-group">
+              <label class="form-label">GitHub URL</label>
+              <input class="form-input" value="${escapeHtml(state.hero.github)}" oninput="state.hero.github=this.value; onDataChange();">
+            </div>
+          </div>
+        `;
+      } else if (activeTab === "about") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">About Me</h2>
+            <label class="toggle"><input type="checkbox" ${state.about.enabled !== false ? "checked" : ""} onchange="state.about.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Eyebrow</label>
+              <input class="form-input" value="${escapeHtml(state.about.eyebrow)}" oninput="state.about.eyebrow=this.value; onDataChange();">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Title</label>
+              <input class="form-input" value="${escapeHtml(state.about.title)}" oninput="state.about.title=this.value; onDataChange();">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">About Image Path</label>
+            <input class="form-input" value="${escapeHtml(state.about.profileImage)}" oninput="state.about.profileImage=this.value; onDataChange();">
+          </div>
+          <div class="form-group">
+            <label class="form-label">About Narrative</label>
+            <textarea class="form-textarea" oninput="state.about.description=this.value; onDataChange();">${escapeHtml(state.about.description)}</textarea>
+          </div>
+          <div style="margin-top:1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="font-size:0.9rem;">Highlight Cards</strong>
+              <button class="add-btn" onclick="state.about.cards.push({title:'New Card', subtitle:'Detail 1', detail:'Detail 2', icon:'assets/icons/experience.svg'}); renderForms(); onDataChange();">+ Add Card</button>
+            </div>
+            ${(state.about.cards || []).map((card, i) => `
+              <div class="item-card">
+                <div class="item-card-header">
+                  <span>Card #${i + 1}</span>
+                  <button class="item-del-btn" onclick="state.about.cards.splice(${i},1); renderForms(); onDataChange();">✕</button>
+                </div>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label">Title</label><input class="form-input" value="${escapeHtml(card.title)}" oninput="state.about.cards[${i}].title=this.value; onDataChange();"></div>
+                  <div class="form-group"><label class="form-label">Subtitle</label><input class="form-input" value="${escapeHtml(card.subtitle)}" oninput="state.about.cards[${i}].subtitle=this.value; onDataChange();"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Detail</label><input class="form-input" value="${escapeHtml(card.detail)}" oninput="state.about.cards[${i}].detail=this.value; onDataChange();"></div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      } else if (activeTab === "experience") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">Work Experience</h2>
+            <label class="toggle"><input type="checkbox" ${state.experience.enabled !== false ? "checked" : ""} onchange="state.experience.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <button class="add-btn" onclick="state.experience.items.push({role:'Software Engineer', company:'Company', period:'2024 - Present', description:'Job responsibilities...', skills:'JavaScript, HTML'}); renderForms(); onDataChange();">+ Add Experience Role</button>
+          ${(state.experience.items || []).map((item, i) => `
+            <div class="item-card">
+              <div class="item-card-header">
+                <span>Role #${i + 1}: ${escapeHtml(item.role)}</span>
+                <button class="item-del-btn" onclick="state.experience.items.splice(${i},1); renderForms(); onDataChange();">✕</button>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Role</label><input class="form-input" value="${escapeHtml(item.role)}" oninput="state.experience.items[${i}].role=this.value; onDataChange();"></div>
+                <div class="form-group"><label class="form-label">Company</label><input class="form-input" value="${escapeHtml(item.company)}" oninput="state.experience.items[${i}].company=this.value; onDataChange();"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Period</label><input class="form-input" value="${escapeHtml(item.period)}" oninput="state.experience.items[${i}].period=this.value; onDataChange();"></div>
+              <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" oninput="state.experience.items[${i}].description=this.value; onDataChange();">${escapeHtml(item.description)}</textarea></div>
+              <div class="form-group"><label class="form-label">Technologies (comma separated)</label><input class="form-input" value="${escapeHtml(item.skills)}" oninput="state.experience.items[${i}].skills=this.value; onDataChange();"></div>
+            </div>
+          `).join("")}
+        `;
+      } else if (activeTab === "skills") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">Skills Categories</h2>
+            <label class="toggle"><input type="checkbox" ${state.skills.enabled !== false ? "checked" : ""} onchange="state.skills.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <button class="add-btn" onclick="state.skills.categories.push({title:'New Category', skills:[{name:'Skill', level:'Experienced'}]}); renderForms(); onDataChange();">+ Add Category</button>
+          ${(state.skills.categories || []).map((cat, cIdx) => `
+            <div class="item-card" style="border: 2px solid #e2e8f0;">
+              <div class="item-card-header">
+                <span>Category: ${escapeHtml(cat.title)}</span>
+                <button class="item-del-btn" onclick="state.skills.categories.splice(${cIdx},1); renderForms(); onDataChange();">✕</button>
+              </div>
+              <div class="form-group"><label class="form-label">Category Title</label><input class="form-input" value="${escapeHtml(cat.title)}" oninput="state.skills.categories[${cIdx}].title=this.value; onDataChange();"></div>
+              <div style="margin-top:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:0.8rem; font-weight:600;">Skills</span>
+                  <button class="add-btn" style="padding:2px 6px; font-size:0.7rem;" onclick="state.skills.categories[${cIdx}].skills.push({name:'New Skill', level:'Intermediate'}); renderForms(); onDataChange();">+ Add Skill</button>
+                </div>
+                ${(cat.skills || []).map((sk, sIdx) => `
+                  <div style="display:flex; gap:6px; margin-bottom:4px;">
+                    <input class="form-input" style="flex:2; padding:4px 6px;" value="${escapeHtml(sk.name)}" oninput="state.skills.categories[${cIdx}].skills[${sIdx}].name=this.value; onDataChange();">
+                    <select class="form-select" style="flex:1; padding:4px 6px;" onchange="state.skills.categories[${cIdx}].skills[${sIdx}].level=this.value; onDataChange();">
+                      <option value="Experienced" ${sk.level==='Experienced'?'selected':''}>Experienced</option>
+                      <option value="Intermediate" ${sk.level==='Intermediate'?'selected':''}>Intermediate</option>
+                      <option value="Basic" ${sk.level==='Basic'?'selected':''}>Basic</option>
+                    </select>
+                    <button class="item-del-btn" onclick="state.skills.categories[${cIdx}].skills.splice(${sIdx},1); renderForms(); onDataChange();">✕</button>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        `;
+      } else if (activeTab === "projects") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">Projects</h2>
+            <label class="toggle"><input type="checkbox" ${state.projects.enabled !== false ? "checked" : ""} onchange="state.projects.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <button class="add-btn" onclick="state.projects.items.push({title:'New Project', description:'Project summary...', image:'assets/images/project-1.svg', technologies:'JavaScript, HTML', github:'https://github.com/', live:'https://github.com/'}); renderForms(); onDataChange();">+ Add Project</button>
+          ${(state.projects.items || []).map((p, i) => `
+            <div class="item-card">
+              <div class="item-card-header">
+                <span>Project #${i + 1}: ${escapeHtml(p.title)}</span>
+                <button class="item-del-btn" onclick="state.projects.items.splice(${i},1); renderForms(); onDataChange();">✕</button>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Title</label><input class="form-input" value="${escapeHtml(p.title)}" oninput="state.projects.items[${i}].title=this.value; onDataChange();"></div>
+                <div class="form-group"><label class="form-label">Image Path</label><input class="form-input" value="${escapeHtml(p.image)}" oninput="state.projects.items[${i}].image=this.value; onDataChange();"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" oninput="state.projects.items[${i}].description=this.value; onDataChange();">${escapeHtml(p.description)}</textarea></div>
+              <div class="form-group"><label class="form-label">Tech Stack (comma separated)</label><input class="form-input" value="${escapeHtml(p.technologies)}" oninput="state.projects.items[${i}].technologies=this.value; onDataChange();"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">GitHub URL</label><input class="form-input" value="${escapeHtml(p.github)}" oninput="state.projects.items[${i}].github=this.value; onDataChange();"></div>
+                <div class="form-group"><label class="form-label">Live Demo URL</label><input class="form-input" value="${escapeHtml(p.live)}" oninput="state.projects.items[${i}].live=this.value; onDataChange();"></div>
+              </div>
+            </div>
+          `).join("")}
+        `;
+      } else if (activeTab === "contact") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">Contact</h2>
+            <label class="toggle"><input type="checkbox" ${state.contact.enabled !== false ? "checked" : ""} onchange="state.contact.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="${escapeHtml(state.contact.email)}" oninput="state.contact.email=this.value; onDataChange();"></div>
+          <div class="form-group"><label class="form-label">LinkedIn URL</label><input class="form-input" value="${escapeHtml(state.contact.linkedin)}" oninput="state.contact.linkedin=this.value; onDataChange();"></div>
+          <div class="form-group"><label class="form-label">GitHub URL</label><input class="form-input" value="${escapeHtml(state.contact.github)}" oninput="state.contact.github=this.value; onDataChange();"></div>
+          <div class="form-group"><label class="form-label">Message Prompt</label><textarea class="form-textarea" oninput="state.contact.description=this.value; onDataChange();">${escapeHtml(state.contact.description)}</textarea></div>
+        `;
+      } else if (activeTab === "footer") {
+        box.innerHTML = `
+          <div class="tab-header">
+            <h2 class="tab-title">Footer</h2>
+            <label class="toggle"><input type="checkbox" ${state.footer.enabled !== false ? "checked" : ""} onchange="state.footer.enabled=this.checked; onDataChange();"> Enabled</label>
+          </div>
+          <div class="form-group"><label class="form-label">Copyright Text</label><input class="form-input" value="${escapeHtml(state.footer.copyright)}" oninput="state.footer.copyright=this.value; onDataChange();"></div>
+        `;
+      }
+    }
+
+    let changeTimer = null;
+    function onDataChange() {
+      clearTimeout(changeTimer);
+      changeTimer = setTimeout(() => {
+        saveDraft();
+        updatePreview();
+      }, 40);
+    }
+
+    /**
+     * GENERATE STANDALONE index.html STRING
+     * Self-contained, zero-dependency, works directly in browser and on GitHub Pages!
+     */
+    function buildStandaloneIndexHtml(d) {
+      const navLinks = [];
+      if (d.about.enabled !== false) navLinks.push({ id: "about", label: "About" });
+      if (d.experience.enabled !== false) navLinks.push({ id: "experience", label: "Experience" });
+      if (d.skills.enabled !== false) navLinks.push({ id: "skills", label: "Skills" });
+      if (d.projects.enabled !== false) navLinks.push({ id: "projects", label: "Projects" });
+      if (d.contact.enabled !== false) navLinks.push({ id: "contact", label: "Contact" });
+
+      const navLiDesktop = navLinks.map(l => `<li><a href="#${l.id}" onclick="event.preventDefault(); scrollToSection('${l.id}');">${l.label}</a></li>`).join("");
+      const navLiMobile = navLinks.map(l => `<li><a href="#${l.id}" onclick="event.preventDefault(); toggleMenu(); scrollToSection('${l.id}');">${l.label}</a></li>`).join("");
+
+      return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${escapeHtml(d.site.title || "Portfolio")}</title>
+    <link rel="icon" type="image/svg+xml" href="${escapeHtml(d.site.favicon || "assets/icons/favicon.svg")}" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+      /* 1. Global Reset & Box Model */
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #ffffff;
+        color: rgb(0, 0, 0);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      p {
+        color: rgb(85, 85, 85);
+      }
+
+      a, .btn, .icon, .hamburger-icon span, .menu-links {
+        transition: all 300ms ease;
+      }
+
+      /* 2. Fixed Header & Navigation */
+      header.site-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      #desktop-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 70px;
+        max-width: 1200px;
+        margin-inline: auto;
+        padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+      }
+
+      .logo {
+        font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+        font-weight: 600;
+        color: #000;
+        cursor: pointer;
+        user-select: none;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: clamp(1.2rem, 2.5vw, 2.2rem);
+        list-style: none;
+        font-size: clamp(1rem, 1.3vw, 1.25rem);
+        align-items: center;
+      }
+
+      a {
+        color: black;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: grey;
+        text-decoration: underline;
+        text-underline-offset: 0.6rem;
+      }
+
+      #hamburger-nav {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 60px;
+        padding: 0.75rem clamp(1rem, 4vw, 1.75rem);
+        position: relative;
+        width: 100%;
+      }
+
+      .hamburger-menu {
+        position: relative;
+        display: inline-block;
+        z-index: 100;
+      }
+
+      .hamburger-icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 22px;
+        width: 28px;
+        cursor: pointer;
+      }
+
+      .hamburger-icon span {
+        width: 100%;
+        height: 2px;
+        background-color: black;
+        display: block;
+        transition: all 0.3s ease;
+      }
+
+      .menu-links {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        background-color: white;
+        width: min(calc(100vw - 2rem), 260px);
+        max-height: 0;
+        overflow: hidden;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .menu-links.open {
+        max-height: 450px;
+        padding: 1rem 0;
+      }
+
+      .menu-links li {
+        list-style: none;
+      }
+
+      .menu-links a {
+        display: block;
+        padding: 10px 20px;
+        text-align: center;
+        font-size: 1.1rem;
+        color: black;
+        text-decoration: none;
+      }
+
+      .menu-links a:hover {
+        background-color: #f8f8f8;
+        color: #555;
+      }
+
+      .hamburger-icon.open span:first-child {
+        transform: rotate(45deg) translate(7px, 6px);
+      }
+
+      .hamburger-icon.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .hamburger-icon.open span:last-child {
+        transform: rotate(-45deg) translate(7px, -6px);
+      }
+
+      /* 3. Section System */
+      section {
+        min-height: 100vh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding-top: max(85px, calc(70px + 2vh));
+        padding-bottom: max(3.5rem, calc(2.5rem + 2vh));
+        padding-inline: clamp(1rem, 4vw, 2.5rem);
+        width: 100%;
+        max-width: 100%;
+        margin-inline: auto;
+      }
+
+      .section-container {
+        display: flex;
+        gap: clamp(1.5rem, 4vw, 4rem);
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 1100px;
+      }
+
+      .section__text__p1 {
+        text-align: center;
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        font-weight: 600;
+        color: rgb(85, 85, 85);
+        margin-bottom: 0.25rem;
+      }
+
+      .title {
+        font-size: clamp(1.85rem, 4vw, 2.75rem);
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+        color: black;
+        word-break: break-word;
+      }
+
+      /* 4. Hero / Profile Section */
+      #profile {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(1.5rem, 5vw, 4.5rem);
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .section__pic-container {
+        display: flex;
+        width: clamp(180px, 28vw, 340px);
+        height: clamp(180px, 28vw, 340px);
+        margin: auto 0;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .profile-img {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .section__text {
+        align-self: center;
+        text-align: center;
+        width: 100%;
+        max-width: 620px;
+      }
+
+      .section__text p {
+        font-weight: 600;
+      }
+
+      .section__text__p2 {
+        font-size: clamp(1.1rem, 2.2vw, 1.65rem);
+        margin-top: 0.35rem;
+        margin-bottom: clamp(0.6rem, 1.5vh, 1.1rem);
+        color: rgb(85, 85, 85);
+        word-break: break-word;
+      }
+
+      .hero-description {
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto clamp(0.85rem, 1.8vh, 1.4rem) auto;
+        font-weight: 400 !important;
+        color: #666;
+        font-size: clamp(0.88rem, 1.4vw, 1rem);
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      #socials-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        gap: clamp(0.85rem, 2vw, 1.25rem);
+        flex-wrap: wrap;
+      }
+
+      .icon {
+        cursor: pointer;
+        height: clamp(1.65rem, 2.2vw, 1.9rem);
+        width: clamp(1.65rem, 2.2vw, 1.9rem);
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .icon:hover {
+        opacity: 0.7;
+        transform: translateY(-2px);
+      }
+
+      .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: clamp(0.6rem, 1.5vw, 1rem);
+        margin-top: 0.25rem;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .btn {
+        font-weight: 600;
+        font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+        padding: clamp(0.6rem, 1.2vh, 0.75rem) clamp(1rem, 2vw, 1.4rem);
+        min-width: clamp(7rem, 15vw, 8.5rem);
+        border-radius: 2rem;
+        text-align: center;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-family: inherit;
+        touch-action: manipulation;
+      }
+
+      .btn-color-1 {
+        background: rgb(53, 53, 53);
+        color: white;
+        border: rgb(53, 53, 53) 0.1rem solid;
+      }
+
+      .btn-color-1:hover {
+        background: #000;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .btn-color-2 {
+        background: transparent;
+        color: black;
+        border: rgb(53, 53, 53) 0.1rem solid;
+      }
+
+      .btn-color-2:hover {
+        background: rgb(53, 53, 53);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      /* 5. About Section */
+      .about-pic {
+        border-radius: 2rem;
+        width: clamp(200px, 24vw, 300px);
+        height: clamp(200px, 24vw, 300px);
+        object-fit: cover;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        flex-shrink: 0;
+      }
+
+      .about-details-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .about-containers {
+        display: flex;
+        gap: clamp(0.75rem, 2vw, 1.5rem);
+        margin-bottom: clamp(0.75rem, 1.8vh, 1.25rem);
+        width: 100%;
+      }
+
+      .details-container {
+        padding: clamp(0.85rem, 1.6vh, 1.25rem);
+        flex: 1;
+        min-width: 0;
+        background: white;
+        border-radius: 2rem;
+        border: rgb(163, 163, 163) 0.1rem solid;
+        text-align: center;
+        transition: all 300ms ease;
+      }
+
+      .details-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .details-container .icon {
+        margin-bottom: 0.35rem;
+        cursor: default;
+      }
+
+      .details-container h3 {
+        font-size: clamp(1rem, 1.5vw, 1.15rem);
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+
+      .details-container p {
+        font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+        word-break: break-word;
+      }
+
+      .text-container {
+        font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+        color: rgb(85, 85, 85);
+        line-height: 1.65;
+        width: 100%;
+        max-width: 800px;
+        margin-inline: auto;
+      }
+
+      .text-container p {
+        max-width: 100%;
+        word-break: break-word;
+      }
+
+      /* Section navigation arrow */
+      .arrow {
+        position: absolute;
+        bottom: clamp(1rem, 3vh, 2rem);
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        cursor: pointer;
+        height: clamp(1.6rem, 2.5vw, 2rem);
+        width: clamp(1.6rem, 2.5vw, 2rem);
+        display: block;
+        opacity: 0.6;
+        transition: opacity 300ms ease, transform 300ms ease;
+        z-index: 20;
+      }
+
+      .arrow:hover {
+        opacity: 1;
+        transform: translateX(-50%) translateY(4px);
+      }
+
+      .arrow-up {
+        transform: translateX(-50%) rotate(180deg);
+      }
+
+      .arrow-up:hover {
+        opacity: 1;
+        transform: translateX(-50%) rotate(180deg) translateY(-4px);
+      }
+
+      /* 6. Experience & Timeline */
+      .experience-details-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      .experience-sub-title {
+        color: rgb(85, 85, 85);
+        font-weight: 600;
+        font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .article-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+        gap: clamp(0.75rem, 1.8vw, 1.5rem);
+        width: 100%;
+        text-align: initial;
+      }
+
+      article {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 0.65rem;
+      }
+
+      article .icon {
+        cursor: default;
+        height: 1.35rem;
+        width: 1.35rem;
+        margin-top: 0.15rem;
+        flex-shrink: 0;
+      }
+
+      article h3 {
+        font-size: clamp(0.9rem, 1.3vw, 1rem);
+        font-weight: 600;
+        color: black;
+      }
+
+      article p {
+        font-size: clamp(0.78rem, 1.1vw, 0.82rem);
+        color: rgb(85, 85, 85);
+      }
+
+      .timeline-container {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(0.85rem, 1.8vh, 1.4rem);
+        max-width: 850px;
+        margin-inline: auto;
+        width: 100%;
+      }
+
+      .timeline-card {
+        background: white;
+        border-radius: 1.75rem;
+        border: rgb(163, 163, 163) 0.1rem solid;
+        padding: clamp(0.9rem, 2vh, 1.4rem) clamp(1rem, 3vw, 1.5rem);
+        width: 100%;
+      }
+
+      .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .timeline-title {
+        font-size: clamp(1rem, 1.5vw, 1.15rem);
+        font-weight: 600;
+      }
+
+      .timeline-company {
+        font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+        font-weight: 500;
+        color: rgb(53, 53, 53);
+      }
+
+      .timeline-period {
+        font-size: clamp(0.8rem, 1.1vw, 0.85rem);
+        color: #777;
+        white-space: nowrap;
+      }
+
+      .timeline-desc {
+        font-size: clamp(0.85rem, 1.25vw, 0.92rem);
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.75rem;
+      }
+
+      .tech-tag {
+        background: #f0f0f0;
+        color: #444;
+        font-size: clamp(0.7rem, 1vw, 0.75rem);
+        padding: 0.2rem 0.65rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e2e2;
+        white-space: nowrap;
+      }
+
+      /* 7. Projects Grid */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: clamp(1rem, 2vw, 1.75rem);
+        width: 100%;
+      }
+
+      .color-container {
+        border-color: rgb(163, 163, 163);
+        background: rgb(250, 250, 250);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: clamp(0.85rem, 1.6vh, 1.25rem);
+        height: auto;
+      }
+
+      .project-img-container {
+        width: 100%;
+        height: clamp(120px, 16vw, 160px);
+        overflow: hidden;
+        border-radius: 1.25rem;
+        margin-bottom: 0.65rem;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .project-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .project-title {
+        margin: 0.25rem 0;
+        color: black;
+        font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+      }
+
+      .project-desc {
+        font-size: clamp(0.82rem, 1.2vw, 0.88rem);
+        color: rgb(85, 85, 85);
+        margin-bottom: 0.65rem;
+        text-align: center;
+        line-height: 1.5;
+        word-break: break-word;
+      }
+
+      .project-btn {
+        color: black;
+        border-color: rgb(163, 163, 163);
+        font-size: clamp(0.78rem, 1.1vw, 0.82rem);
+        padding: 0.55rem 1.15rem;
+        min-width: clamp(5.5rem, 12vw, 6.5rem);
+      }
+
+      /* 8. Contact Section & Footer */
+      .contact-description {
+        text-align: center;
+        width: 100%;
+        max-width: 580px;
+        margin: 0 auto clamp(0.75rem, 1.8vh, 1.25rem) auto;
+        font-size: clamp(0.88rem, 1.3vw, 0.95rem);
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .contact-info-upper-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        border-radius: 2rem;
+        border: rgb(163, 163, 163) 0.1rem solid;
+        background: rgb(250, 250, 250);
+        margin: 0.5rem auto 1.5rem auto;
+        padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 2.5vw, 1.75rem);
+        width: 100%;
+        max-width: 850px;
+        gap: 0.5rem;
+      }
+
+      .contact-info-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        margin: 0.5rem clamp(0.5rem, 1.5vw, 1.25rem);
+        max-width: 100%;
+      }
+
+      .contact-info-container p {
+        font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+        word-break: break-word;
+      }
+
+      .contact-icon {
+        cursor: pointer;
+        height: 1.8rem;
+        width: 1.8rem;
+        flex-shrink: 0;
+      }
+
+      .contact-footer {
+        margin-top: 1rem;
+        margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+        text-align: center;
+        width: 100%;
+        padding: 0 1rem;
+      }
+
+      .contact-footer p {
+        font-size: clamp(0.78rem, 1.2vw, 0.88rem);
+        color: rgb(120, 120, 120);
+      }
+
+      /* 9. Cohesive Responsive Breakpoints */
+      @media screen and (max-width: 1024px) {
+        #desktop-nav {
+          display: none;
+        }
+
+        #hamburger-nav {
+          display: flex;
+        }
+
+        section {
+          min-height: auto;
+          padding-top: max(80px, calc(65px + 2vh));
+          padding-bottom: max(3.5rem, calc(2rem + 2vh));
+        }
+
+        #profile {
+          flex-direction: column;
+          gap: clamp(1.25rem, 3vh, 2rem);
+          text-align: center;
+        }
+
+        .section-container {
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .about-pic {
+          width: clamp(180px, 25vw, 240px);
+          height: clamp(180px, 25vw, 240px);
+        }
+
+        .about-containers {
+          gap: 1rem;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        section {
+          padding-inline: clamp(0.85rem, 3.5vw, 1.5rem);
+          padding-top: 75px;
+          padding-bottom: 3.5rem;
+        }
+
+        .about-containers {
+          flex-direction: column;
+          gap: 0.85rem;
+        }
+
+        .about-pic {
+          width: clamp(150px, 40vw, 200px);
+          height: clamp(150px, 40vw, 200px);
+          margin-inline: auto;
+        }
+
+        .contact-info-upper-container {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 0.85rem 1rem;
+          border-radius: 1.5rem;
+        }
+
+        .contact-info-container {
+          justify-content: flex-start;
+          margin: 0.35rem 0;
+        }
+
+        .timeline-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.2rem;
+        }
+
+        .arrow {
+          bottom: 1.25rem;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .btn-container {
+          flex-direction: column;
+          align-items: stretch;
+          width: 100%;
+          max-width: 280px;
+          margin-inline: auto;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .section__pic-container {
+          width: clamp(160px, 50vw, 220px);
+          height: clamp(160px, 50vw, 220px);
+        }
+
+        .timeline-card, .details-container {
+          border-radius: 1.25rem;
+          padding: 1rem;
+        }
+
+        .contact-info-container {
+          word-break: break-all;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- FIXED SITE HEADER -->
+    <header class="site-header">
+      <nav id="desktop-nav">
+        <div class="logo" onclick="scrollToSection('profile')">${escapeHtml(d.navigation.logo || d.hero.name || "Portfolio")}</div>
+        <div>
+          <ul class="nav-links">${navLiDesktop}</ul>
+        </div>
+      </nav>
+
+      <nav id="hamburger-nav">
+        <div class="logo" onclick="scrollToSection('profile')">${escapeHtml(d.navigation.logo || d.hero.name || "Portfolio")}</div>
+        <div class="hamburger-menu">
+          <div class="hamburger-icon" onclick="toggleMenu()" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+          </div>
+          <ul class="menu-links">${navLiMobile}</ul>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      ${d.hero.enabled !== false ? `
+      <!-- HERO -->
+      <section id="profile">
+        <div class="section__pic-container">
+          <img src="${escapeHtml(d.hero.profileImage || "assets/images/profile-pic.svg")}" alt="Profile picture" class="profile-img" />
+        </div>
+        <div class="section__text">
+          <p class="section__text__p1">${escapeHtml(d.hero.greeting || "Hello, I'm")}</p>
+          <h1 class="title">${escapeHtml(d.hero.name || "Portfolio")}</h1>
+          <p class="section__text__p2">${escapeHtml(d.hero.title || "Software Engineer")}</p>
+          ${d.hero.description ? `<p class="hero-description">${escapeHtml(d.hero.description)}</p>` : ""}
+          <div class="btn-container">
+            ${d.hero.btn1Text ? `<button class="btn btn-color-2" onclick="window.open('${escapeHtml(d.hero.btn1Url)}')">${escapeHtml(d.hero.btn1Text)}</button>` : ""}
+            ${d.hero.btn2Text ? `<button class="btn btn-color-1" onclick="scrollToSection('contact')">${escapeHtml(d.hero.btn2Text)}</button>` : ""}
+          </div>
+          <div id="socials-container" style="margin-top: 8px;">
+            ${d.hero.linkedin ? `<img src="assets/icons/linkedin.svg" alt="LinkedIn" class="icon" onclick="window.open('${escapeHtml(d.hero.linkedin)}', '_blank')" />` : ""}
+            ${d.hero.github ? `<img src="assets/icons/github.svg" alt="GitHub" class="icon" onclick="window.open('${escapeHtml(d.hero.github)}', '_blank')" />` : ""}
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('about')" />
+      </section>` : ""}
+
+      ${d.about.enabled !== false ? `
+      <!-- ABOUT -->
+      <section id="about">
+        <p class="section__text__p1">${escapeHtml(d.about.eyebrow || "Get To Know More")}</p>
+        <h1 class="title">${escapeHtml(d.about.title || "About Me")}</h1>
+        <div class="section-container">
+          <div class="section__pic-container">
+            <img src="${escapeHtml(d.about.profileImage || "assets/images/about-pic.svg")}" alt="About picture" class="about-pic" />
+          </div>
+          <div class="about-details-container">
+            <div class="about-containers">
+              ${(d.about.cards || []).map(c => `
+                <div class="details-container">
+                  <img src="${escapeHtml(c.icon || "assets/icons/experience.svg")}" alt="Icon" class="icon" />
+                  <h3>${escapeHtml(c.title)}</h3>
+                  <p>${escapeHtml(c.subtitle)} <br />${escapeHtml(c.detail)}</p>
+                </div>
+              `).join("")}
+            </div>
+            <div class="text-container">
+              <p>${escapeHtml(d.about.description)}</p>
+            </div>
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('experience')" />
+      </section>` : ""}
+
+      ${d.experience.enabled !== false ? `
+      <!-- EXPERIENCE -->
+      <section id="experience">
+        <p class="section__text__p1">${escapeHtml(d.experience.eyebrow || "Explore My")}</p>
+        <h1 class="title">${escapeHtml(d.experience.title || "Experience")}</h1>
+        <div class="experience-details-container">
+          <div class="timeline-container">
+            ${(d.experience.items || []).map(it => `
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <div>
+                    <h3 class="timeline-title">${escapeHtml(it.role)}</h3>
+                    <div class="timeline-company">${escapeHtml(it.company)}</div>
+                  </div>
+                  <div class="timeline-period">${escapeHtml(it.period)}</div>
+                </div>
+                <p class="timeline-desc">${escapeHtml(it.description)}</p>
+                ${it.skills ? `<div class="tech-tags">${it.skills.split(",").map(s => `<span class="tech-tag">${escapeHtml(s.trim())}</span>`).join("")}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('skills')" />
+      </section>` : ""}
+
+      ${d.skills.enabled !== false ? `
+      <!-- SKILLS -->
+      <section id="skills">
+        <p class="section__text__p1">${escapeHtml(d.skills.eyebrow || "Explore My")}</p>
+        <h1 class="title">${escapeHtml(d.skills.title || "Skills")}</h1>
+        <div class="experience-details-container">
+          <div class="about-containers">
+            ${(d.skills.categories || []).map(cat => `
+              <div class="details-container">
+                <h2 class="experience-sub-title">${escapeHtml(cat.title)}</h2>
+                <div class="article-container">
+                  ${(cat.skills || []).map(sk => `
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>${escapeHtml(sk.name)}</h3>
+                        <p>${escapeHtml(sk.level)}</p>
+                      </div>
+                    </article>
+                  `).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('projects')" />
+      </section>` : ""}
+
+      ${d.projects.enabled !== false ? `
+      <!-- PROJECTS -->
+      <section id="projects">
+        <p class="section__text__p1">${escapeHtml(d.projects.eyebrow || "Browse My Recent")}</p>
+        <h1 class="title">${escapeHtml(d.projects.title || "Projects")}</h1>
+        <div class="experience-details-container">
+          <div class="projects-grid">
+            ${(d.projects.items || []).map(p => `
+              <div class="details-container color-container">
+                <div class="project-img-container">
+                  <img src="${escapeHtml(p.image || "assets/images/project-1.svg")}" alt="${escapeHtml(p.title)}" class="project-img" />
+                </div>
+                <h2 class="experience-sub-title project-title">${escapeHtml(p.title)}</h2>
+                <p class="project-desc">${escapeHtml(p.description)}</p>
+                ${p.technologies ? `<div class="tech-tags" style="justify-content:center; margin-bottom:0.75rem;">${p.technologies.split(",").map(t => `<span class="tech-tag">${escapeHtml(t.trim())}</span>`).join("")}</div>` : ""}
+                <div class="btn-container">
+                  ${p.github ? `<button class="btn btn-color-2 project-btn" onclick="window.open('${escapeHtml(p.github)}', '_blank')">GitHub</button>` : ""}
+                  ${p.live ? `<button class="btn btn-color-2 project-btn" onclick="window.open('${escapeHtml(p.live)}', '_blank')">Live Demo</button>` : ""}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('contact')" />
+      </section>` : ""}
+
+      ${d.contact.enabled !== false ? `
+      <!-- CONTACT -->
+      <section id="contact">
+        <p class="section__text__p1">${escapeHtml(d.contact.eyebrow || "Get in Touch")}</p>
+        <h1 class="title">${escapeHtml(d.contact.title || "Contact Me")}</h1>
+        <p class="contact-description">${escapeHtml(d.contact.description || "")}</p>
+        <div class="contact-info-upper-container">
+          ${d.contact.email ? `
+            <div class="contact-info-container">
+              <img src="assets/icons/email.svg" alt="Email" class="icon contact-icon" />
+              <p><a href="mailto:${escapeHtml(d.contact.email)}">${escapeHtml(d.contact.email)}</a></p>
+            </div>
+          ` : ""}
+          ${d.contact.linkedin ? `
+            <div class="contact-info-container">
+              <img src="assets/icons/linkedin.svg" alt="LinkedIn" class="icon contact-icon" />
+              <p><a href="${escapeHtml(d.contact.linkedin)}" target="_blank" rel="noopener">LinkedIn</a></p>
+            </div>
+          ` : ""}
+          ${d.contact.github ? `
+            <div class="contact-info-container">
+              <img src="assets/icons/github.svg" alt="GitHub" class="icon contact-icon" />
+              <p><a href="${escapeHtml(d.contact.github)}" target="_blank" rel="noopener">GitHub</a></p>
+            </div>
+          ` : ""}
+        </div>
+        ${d.footer.enabled !== false ? `
+        <div class="contact-footer">
+          <p>${escapeHtml(d.footer.copyright || "Copyright © 2025. All Rights Reserved.")}</p>
+        </div>` : ""}
+        <img src="assets/icons/arrow.svg" alt="Back to top" class="icon arrow arrow-up" onclick="scrollToSection('profile')" title="Back to top" />
+      </section>` : ""}
+    </main>
+
+    <script>
+      function toggleMenu() {
+        const m = document.querySelector(".menu-links");
+        const i = document.querySelector(".hamburger-icon");
+        if (m && i) { m.classList.toggle("open"); i.classList.toggle("open"); }
+      }
+
+      function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    <\/script>
+  </body>
+</html>`;
+    }
+
+    function updatePreview() {
+      const frame = document.getElementById("preview-iframe");
+      if (frame) {
+        frame.srcdoc = buildStandaloneIndexHtml(state);
+      }
+    }
+
+    /**
+     * GENERATE index.html FILE DOWNLOAD
+     */
+    function generateIndexHtml() {
+      const html = buildStandaloneIndexHtml(state);
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "index.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("index.html generated and downloaded!");
+    }
+
+    // Init on boot
+    window.addEventListener("DOMContentLoaded", () => {
+      renderForms();
+      updatePreview();
+    });
+  </script>
+</body>
+</html>

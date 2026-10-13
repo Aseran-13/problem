@@ -1,0 +1,8 @@
+{
+  "name": "Static Portfolio Builder",
+  "description": "Pure HTML, CSS, and Vanilla JavaScript portfolio website with live in-browser customizer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

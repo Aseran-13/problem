@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static Portfolio Builder - Vignesh Seetharaman</title>
+    <meta name="description" content="Pure HTML, CSS, and Vanilla JavaScript portfolio website with live in-browser customizer." />
+    <meta property="og:title" content="Static Portfolio Builder - Vignesh Seetharaman" />
+    <meta property="og:description" content="Pure HTML, CSS, and Vanilla JavaScript portfolio website with live in-browser customizer." />
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+      /* 1. Global Reset & Box Model */
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #ffffff;
+        color: rgb(0, 0, 0);
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        max-width: 100%;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      p {
+        color: rgb(85, 85, 85);
+      }
+
+      a, .btn, .icon, .hamburger-icon span, .menu-links {
+        transition: all 300ms ease;
+      }
+
+      /* 2. Fixed Header & Navigation */
+      header.site-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      #desktop-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 70px;
+        max-width: 1200px;
+        margin-inline: auto;
+        padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+      }
+
+      .logo {
+        font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+        font-weight: 600;
+        color: #000;
+        cursor: pointer;
+        user-select: none;
+        letter-spacing: 0.5px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: clamp(1.2rem, 2.5vw, 2.2rem);
+        list-style: none;
+        font-size: clamp(1rem, 1.3vw, 1.25rem);
+        align-items: center;
+      }
+
+      a {
+        color: black;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: grey;
+        text-decoration: underline;
+        text-underline-offset: 0.6rem;
+      }
+
+      #hamburger-nav {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 60px;
+        padding: 0.75rem clamp(1rem, 4vw, 1.75rem);
+        position: relative;
+        width: 100%;
+      }
+
+      .hamburger-menu {
+        position: relative;
+        display: inline-block;
+        z-index: 100;
+      }
+
+      .hamburger-icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 22px;
+        width: 28px;
+        cursor: pointer;
+      }
+
+      .hamburger-icon span {
+        width: 100%;
+        height: 2px;
+        background-color: black;
+        display: block;
+        transition: all 0.3s ease;
+      }
+
+      .menu-links {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        background-color: white;
+        width: min(calc(100vw - 2rem), 260px);
+        max-height: 0;
+        overflow: hidden;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .menu-links.open {
+        max-height: 450px;
+        padding: 1rem 0;
+      }
+
+      .menu-links li {
+        list-style: none;
+      }
+
+      .menu-links a {
+        display: block;
+        padding: 10px 20px;
+        text-align: center;
+        font-size: 1.1rem;
+        color: black;
+        text-decoration: none;
+      }
+
+      .menu-links a:hover {
+        background-color: #f8f8f8;
+        color: #555;
+      }
+
+      .hamburger-icon.open span:first-child {
+        transform: rotate(45deg) translate(7px, 6px);
+      }
+
+      .hamburger-icon.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .hamburger-icon.open span:last-child {
+        transform: rotate(-45deg) translate(7px, -6px);
+      }
+
+      /* 3. Section System */
+      section {
+        min-height: 100vh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        padding-top: max(85px, calc(70px + 2vh));
+        padding-bottom: max(3.5rem, calc(2.5rem + 2vh));
+        padding-inline: clamp(1rem, 4vw, 2.5rem);
+        width: 100%;
+        max-width: 100%;
+        margin-inline: auto;
+      }
+
+      .section-container {
+        display: flex;
+        gap: clamp(1.5rem, 4vw, 4rem);
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 1100px;
+      }
+
+      .section__text__p1 {
+        text-align: center;
+        font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+        font-weight: 600;
+        color: rgb(85, 85, 85);
+        margin-bottom: 0.25rem;
+      }
+
+      .title {
+        font-size: clamp(1.85rem, 4vw, 2.75rem);
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+        color: black;
+        word-break: break-word;
+      }
+
+      /* 4. Hero / Profile Section */
+      #profile {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(1.5rem, 5vw, 4.5rem);
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .section__pic-container {
+        display: flex;
+        width: clamp(180px, 28vw, 340px);
+        height: clamp(180px, 28vw, 340px);
+        margin: auto 0;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .profile-img {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .section__text {
+        align-self: center;
+        text-align: center;
+        width: 100%;
+        max-width: 620px;
+      }
+
+      .section__text p {
+        font-weight: 600;
+      }
+
+      .section__text__p2 {
+        font-size: clamp(1.1rem, 2.2vw, 1.65rem);
+        margin-top: 0.35rem;
+        margin-bottom: clamp(0.6rem, 1.5vh, 1.1rem);
+        color: rgb(85, 85, 85);
+        word-break: break-word;
+      }
+
+      .hero-description {
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto clamp(0.85rem, 1.8vh, 1.4rem) auto;
+        font-weight: 400 !important;
+        color: #666;
+        font-size: clamp(0.88rem, 1.4vw, 1rem);
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      #socials-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        gap: clamp(0.85rem, 2vw, 1.25rem);
+        flex-wrap: wrap;
+      }
+
+      .icon {
+        cursor: pointer;
+        height: clamp(1.65rem, 2.2vw, 1.9rem);
+        width: clamp(1.65rem, 2.2vw, 1.9rem);
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .icon:hover {
+        opacity: 0.7;
+        transform: translateY(-2px);
+      }
+
+      .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: clamp(0.6rem, 1.5vw, 1rem);
+        margin-top: 0.25rem;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .btn {
+        font-weight: 600;
+        font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+        padding: clamp(0.6rem, 1.2vh, 0.75rem) clamp(1rem, 2vw, 1.4rem);
+        min-width: clamp(7rem, 15vw, 8.5rem);
+        border-radius: 2rem;
+        text-align: center;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-family: inherit;
+        touch-action: manipulation;
+      }
+
+      .btn-color-1 {
+        background: rgb(53, 53, 53);
+        color: white;
+        border: rgb(53, 53, 53) 0.1rem solid;
+      }
+
+      .btn-color-1:hover {
+        background: #000;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .btn-color-2 {
+        background: transparent;
+        color: black;
+        border: rgb(53, 53, 53) 0.1rem solid;
+      }
+
+      .btn-color-2:hover {
+        background: rgb(53, 53, 53);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      /* 5. About Section */
+      .about-pic {
+        border-radius: 2rem;
+        width: clamp(200px, 24vw, 300px);
+        height: clamp(200px, 24vw, 300px);
+        object-fit: cover;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        flex-shrink: 0;
+      }
+
+      .about-details-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .about-containers {
+        display: flex;
+        gap: clamp(0.75rem, 2vw, 1.5rem);
+        margin-bottom: clamp(0.75rem, 1.8vh, 1.25rem);
+        width: 100%;
+      }
+
+      .details-container {
+        padding: clamp(0.85rem, 1.6vh, 1.25rem);
+        flex: 1;
+        min-width: 0;
+        background: white;
+        border-radius: 2rem;
+        border: rgb(163, 163, 163) 0.1rem solid;
+        text-align: center;
+        transition: all 300ms ease;
+      }
+
+      .details-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .details-container .icon {
+        margin-bottom: 0.35rem;
+        cursor: default;
+      }
+
+      .details-container h3 {
+        font-size: clamp(1rem, 1.5vw, 1.15rem);
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+
+      .details-container p {
+        font-size: clamp(0.82rem, 1.2vw, 0.9rem);
+        word-break: break-word;
+      }
+
+      .text-container {
+        font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+        color: rgb(85, 85, 85);
+        line-height: 1.65;
+        width: 100%;
+        max-width: 800px;
+        margin-inline: auto;
+      }
+
+      .text-container p {
+        max-width: 100%;
+        word-break: break-word;
+      }
+
+      /* Section navigation arrow */
+      .arrow {
+        position: absolute;
+        bottom: clamp(1rem, 3vh, 2rem);
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        cursor: pointer;
+        height: clamp(1.6rem, 2.5vw, 2rem);
+        width: clamp(1.6rem, 2.5vw, 2rem);
+        display: block;
+        opacity: 0.6;
+        transition: opacity 300ms ease, transform 300ms ease;
+        z-index: 20;
+      }
+
+      .arrow:hover {
+        opacity: 1;
+        transform: translateX(-50%) translateY(4px);
+      }
+
+      .arrow-up {
+        transform: translateX(-50%) rotate(180deg);
+      }
+
+      .arrow-up:hover {
+        opacity: 1;
+        transform: translateX(-50%) rotate(180deg) translateY(-4px);
+      }
+
+      /* 6. Experience & Timeline */
+      .experience-details-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      .experience-sub-title {
+        color: rgb(85, 85, 85);
+        font-weight: 600;
+        font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .article-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+        gap: clamp(0.75rem, 1.8vw, 1.5rem);
+        width: 100%;
+        text-align: initial;
+      }
+
+      article {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: flex-start;
+        gap: 0.65rem;
+      }
+
+      article .icon {
+        cursor: default;
+        height: 1.35rem;
+        width: 1.35rem;
+        margin-top: 0.15rem;
+        flex-shrink: 0;
+      }
+
+      article h3 {
+        font-size: clamp(0.9rem, 1.3vw, 1rem);
+        font-weight: 600;
+        color: black;
+      }
+
+      article p {
+        font-size: clamp(0.78rem, 1.1vw, 0.82rem);
+        color: rgb(85, 85, 85);
+      }
+
+      .timeline-container {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(0.85rem, 1.8vh, 1.4rem);
+        max-width: 850px;
+        margin-inline: auto;
+        width: 100%;
+      }
+
+      .timeline-card {
+        background: white;
+        border-radius: 1.75rem;
+        border: rgb(163, 163, 163) 0.1rem solid;
+        padding: clamp(0.9rem, 2vh, 1.4rem) clamp(1rem, 3vw, 1.5rem);
+        width: 100%;
+      }
+
+      .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .timeline-title {
+        font-size: clamp(1rem, 1.5vw, 1.15rem);
+        font-weight: 600;
+      }
+
+      .timeline-company {
+        font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+        font-weight: 500;
+        color: rgb(53, 53, 53);
+      }
+
+      .timeline-period {
+        font-size: clamp(0.8rem, 1.1vw, 0.85rem);
+        color: #777;
+        white-space: nowrap;
+      }
+
+      .timeline-desc {
+        font-size: clamp(0.85rem, 1.25vw, 0.92rem);
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.75rem;
+      }
+
+      .tech-tag {
+        background: #f0f0f0;
+        color: #444;
+        font-size: clamp(0.7rem, 1vw, 0.75rem);
+        padding: 0.2rem 0.65rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e2e2;
+        white-space: nowrap;
+      }
+
+      /* 7. Projects Grid */
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: clamp(1rem, 2vw, 1.75rem);
+        width: 100%;
+      }
+
+      .color-container {
+        border-color: rgb(163, 163, 163);
+        background: rgb(250, 250, 250);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: clamp(0.85rem, 1.6vh, 1.25rem);
+        height: auto;
+      }
+
+      .project-img-container {
+        width: 100%;
+        height: clamp(120px, 16vw, 160px);
+        overflow: hidden;
+        border-radius: 1.25rem;
+        margin-bottom: 0.65rem;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .project-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .project-title {
+        margin: 0.25rem 0;
+        color: black;
+        font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+      }
+
+      .project-desc {
+        font-size: clamp(0.82rem, 1.2vw, 0.88rem);
+        color: rgb(85, 85, 85);
+        margin-bottom: 0.65rem;
+        text-align: center;
+        line-height: 1.5;
+        word-break: break-word;
+      }
+
+      .project-btn {
+        color: black;
+        border-color: rgb(163, 163, 163);
+        font-size: clamp(0.78rem, 1.1vw, 0.82rem);
+        padding: 0.55rem 1.15rem;
+        min-width: clamp(5.5rem, 12vw, 6.5rem);
+      }
+
+      /* 8. Contact Section & Footer */
+      .contact-description {
+        text-align: center;
+        width: 100%;
+        max-width: 580px;
+        margin: 0 auto clamp(0.75rem, 1.8vh, 1.25rem) auto;
+        font-size: clamp(0.88rem, 1.3vw, 0.95rem);
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .contact-info-upper-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        border-radius: 2rem;
+        border: rgb(163, 163, 163) 0.1rem solid;
+        background: rgb(250, 250, 250);
+        margin: 0.5rem auto 1.5rem auto;
+        padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 2.5vw, 1.75rem);
+        width: 100%;
+        max-width: 850px;
+        gap: 0.5rem;
+      }
+
+      .contact-info-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        margin: 0.5rem clamp(0.5rem, 1.5vw, 1.25rem);
+        max-width: 100%;
+      }
+
+      .contact-info-container p {
+        font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+        word-break: break-word;
+      }
+
+      .contact-icon {
+        cursor: pointer;
+        height: 1.8rem;
+        width: 1.8rem;
+        flex-shrink: 0;
+      }
+
+      .contact-footer {
+        margin-top: 1rem;
+        margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+        text-align: center;
+        width: 100%;
+        padding: 0 1rem;
+      }
+
+      .contact-footer p {
+        font-size: clamp(0.78rem, 1.2vw, 0.88rem);
+        color: rgb(120, 120, 120);
+      }
+
+      /* 9. Cohesive Responsive Breakpoints */
+      @media screen and (max-width: 1024px) {
+        #desktop-nav {
+          display: none;
+        }
+
+        #hamburger-nav {
+          display: flex;
+        }
+
+        section {
+          min-height: auto;
+          padding-top: max(80px, calc(65px + 2vh));
+          padding-bottom: max(3.5rem, calc(2rem + 2vh));
+        }
+
+        #profile {
+          flex-direction: column;
+          gap: clamp(1.25rem, 3vh, 2rem);
+          text-align: center;
+        }
+
+        .section-container {
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .about-pic {
+          width: clamp(180px, 25vw, 240px);
+          height: clamp(180px, 25vw, 240px);
+        }
+
+        .about-containers {
+          gap: 1rem;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        section {
+          padding-inline: clamp(0.85rem, 3.5vw, 1.5rem);
+          padding-top: 75px;
+          padding-bottom: 3.5rem;
+        }
+
+        .about-containers {
+          flex-direction: column;
+          gap: 0.85rem;
+        }
+
+        .about-pic {
+          width: clamp(150px, 40vw, 200px);
+          height: clamp(150px, 40vw, 200px);
+          margin-inline: auto;
+        }
+
+        .contact-info-upper-container {
+          flex-direction: column;
+          align-items: stretch;
+          padding: 0.85rem 1rem;
+          border-radius: 1.5rem;
+        }
+
+        .contact-info-container {
+          justify-content: flex-start;
+          margin: 0.35rem 0;
+        }
+
+        .timeline-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.2rem;
+        }
+
+        .arrow {
+          bottom: 1.25rem;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .btn-container {
+          flex-direction: column;
+          align-items: stretch;
+          width: 100%;
+          max-width: 280px;
+          margin-inline: auto;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .section__pic-container {
+          width: clamp(160px, 50vw, 220px);
+          height: clamp(160px, 50vw, 220px);
+        }
+
+        .timeline-card, .details-container {
+          border-radius: 1.25rem;
+          padding: 1rem;
+        }
+
+        .contact-info-container {
+          word-break: break-all;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- FIXED SITE HEADER -->
+    <header class="site-header">
+      <nav id="desktop-nav">
+        <div class="logo" onclick="scrollToSection('profile')">Vignesh Seetharaman</div>
+        <div>
+          <ul class="nav-links"><li><a href="#about" onclick="event.preventDefault(); scrollToSection('about');">About</a></li><li><a href="#experience" onclick="event.preventDefault(); scrollToSection('experience');">Experience</a></li><li><a href="#skills" onclick="event.preventDefault(); scrollToSection('skills');">Skills</a></li><li><a href="#projects" onclick="event.preventDefault(); scrollToSection('projects');">Projects</a></li><li><a href="#contact" onclick="event.preventDefault(); scrollToSection('contact');">Contact</a></li></ul>
+        </div>
+      </nav>
+
+      <nav id="hamburger-nav">
+        <div class="logo" onclick="scrollToSection('profile')">Vignesh Seetharaman</div>
+        <div class="hamburger-menu">
+          <div class="hamburger-icon" onclick="toggleMenu()" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+          </div>
+          <ul class="menu-links"><li><a href="#about" onclick="event.preventDefault(); toggleMenu(); scrollToSection('about');">About</a></li><li><a href="#experience" onclick="event.preventDefault(); toggleMenu(); scrollToSection('experience');">Experience</a></li><li><a href="#skills" onclick="event.preventDefault(); toggleMenu(); scrollToSection('skills');">Skills</a></li><li><a href="#projects" onclick="event.preventDefault(); toggleMenu(); scrollToSection('projects');">Projects</a></li><li><a href="#contact" onclick="event.preventDefault(); toggleMenu(); scrollToSection('contact');">Contact</a></li></ul>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      
+      <!-- HERO -->
+      <section id="profile">
+        <div class="section__pic-container">
+          <img src="assets/images/herop.png" alt="Profile picture" class="profile-img" />
+        </div>
+        <div class="section__text">
+          <p class="section__text__p1">Hello, I'm</p>
+          <h1 class="title">Vignesh Seetharaman</h1>
+          <p class="section__text__p2">Aspiring Supply chain &amp; Operations Analyst</p>
+          <p class="hero-description">Supply chain enthusiast turning data into smarter decisions and efficient operations. Building expertise across analytics, business intelligence, and supply chain technology.</p>
+          <div class="btn-container">
+            <button class="btn btn-color-2" onclick="window.open('assets/documents/resume-example.txt')">Resume </button>
+            <button class="btn btn-color-1" onclick="scrollToSection('contact')">Contact Info</button>
+          </div>
+          <div id="socials-container" style="margin-top: 8px;">
+            <img src="assets/icons/linkedin.svg" alt="LinkedIn" class="icon" onclick="window.open('https://www.linkedin.com/in/vigneshseetha/', '_blank')" />
+            <img src="assets/icons/github.svg" alt="GitHub" class="icon" onclick="window.open('https://github.com/Aseran-13', '_blank')" />
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('about')" />
+      </section>
+
+      
+      <!-- ABOUT -->
+      <section id="about">
+        <p class="section__text__p1">Get To Know More</p>
+        <h1 class="title">About Me</h1>
+        <div class="section-container">
+          <div class="section__pic-container">
+            <img src="assets/images/hero1.png" alt="About picture" class="about-pic" />
+          </div>
+          <div class="about-details-container">
+            <div class="about-containers">
+              
+                <div class="details-container">
+                  <img src="assets/icons/experience.svg" alt="Icon" class="icon" />
+                  <h3>Experience</h3>
+                  <p>2016 - 2018 (2 years) <br />Omega Healthcare Management Services</p>
+                </div>
+              
+                <div class="details-container">
+                  <img src="assets/icons/education.svg" alt="Icon" class="icon" />
+                  <h3>Education</h3>
+                  <p>Bcomm. Logistics &amp; supply chain management <br />CURTIN UNIVERSITY</p>
+                </div>
+              
+            </div>
+            <div class="text-container">
+              <p>Supply chain enthusiast turning data into smarter decisions and efficient operations. Building expertise across analytics, business intelligence, and supply chain technology.</p>
+            </div>
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('experience')" />
+      </section>
+
+      
+      <!-- EXPERIENCE -->
+      <section id="experience">
+        <p class="section__text__p1">Explore My</p>
+        <h1 class="title">Experience</h1>
+        <div class="experience-details-container">
+          <div class="timeline-container">
+            
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <div>
+                    <h3 class="timeline-title">Accounts Receivable Executive</h3>
+                    <div class="timeline-company">Omega Healthcare Management Services, Bengaluru</div>
+                  </div>
+                  <div class="timeline-period">2016 - 2018</div>
+                </div>
+                <p class="timeline-desc">Managed FQHC/FFS accounts, resolving outstanding issues through accurate review and structured follow-up.
+Handled high-volume workflows, special projects, and supported new team members with process guidance.</p>
+                <div class="tech-tags"><span class="tech-tag">Excel</span><span class="tech-tag">MS office</span></div>
+              </div>
+            
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('skills')" />
+      </section>
+
+      
+      <!-- SKILLS -->
+      <section id="skills">
+        <p class="section__text__p1">Explore My</p>
+        <h1 class="title">Skills</h1>
+        <div class="experience-details-container">
+          <div class="about-containers">
+            
+              <div class="details-container">
+                <h2 class="experience-sub-title">Analytics &amp; Data Tools</h2>
+                <div class="article-container">
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Python</h3>
+                        <p>Intermediate</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>SQL</h3>
+                        <p>Intermediate</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Microsoft Excel</h3>
+                        <p>Experienced</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Power BI</h3>
+                        <p>Intermediate</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Tableau</h3>
+                        <p>Intermediate</p>
+                      </div>
+                    </article>
+                  
+                </div>
+              </div>
+            
+              <div class="details-container">
+                <h2 class="experience-sub-title">Supply Chain &amp; Operations</h2>
+                <div class="article-container">
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Logistics Management</h3>
+                        <p>Experienced</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Inventory Optimization</h3>
+                        <p>Intermediate</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Process Improvement</h3>
+                        <p>Experienced</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Account Reconciliation</h3>
+                        <p>Experienced</p>
+                      </div>
+                    </article>
+                  
+                    <article>
+                      <img src="assets/icons/checkmark.svg" alt="Checkmark" class="icon" />
+                      <div>
+                        <h3>Workflow Planning</h3>
+                        <p>Experienced</p>
+                      </div>
+                    </article>
+                  
+                </div>
+              </div>
+            
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('projects')" />
+      </section>
+
+      
+      <!-- PROJECTS -->
+      <section id="projects">
+        <p class="section__text__p1">Browse My Recent</p>
+        <h1 class="title">Projects</h1>
+        <div class="experience-details-container">
+          <div class="projects-grid">
+            
+              <div class="details-container color-container">
+                <div class="project-img-container">
+                  <img src="assets/images/project-1.svg" alt="Budget Management" class="project-img" />
+                </div>
+                <h2 class="experience-sub-title project-title">Budget Management</h2>
+                <p class="project-desc">A personal finance management web application designed to track recurring expenses and visualize spending statistics.</p>
+                <div class="tech-tags" style="justify-content:center; margin-bottom:0.75rem;"><span class="tech-tag">JavaScript</span><span class="tech-tag">HTML/CSS</span><span class="tech-tag">Charts</span><span class="tech-tag">LocalStorage</span></div>
+                <div class="btn-container">
+                  <button class="btn btn-color-2 project-btn" onclick="window.open('https://github.com/', '_blank')">GitHub</button>
+                  <button class="btn btn-color-2 project-btn" onclick="window.open('https://github.com/', '_blank')">Live Demo</button>
+                </div>
+              </div>
+            
+              <div class="details-container color-container">
+                <div class="project-img-container">
+                  <img src="assets/images/project-2.svg" alt="New Releases Tracker" class="project-img" />
+                </div>
+                <h2 class="experience-sub-title project-title">New Releases Tracker</h2>
+                <p class="project-desc">An automated music tracker checking daily for newly dropped singles and albums from followed artists on Spotify.</p>
+                <div class="tech-tags" style="justify-content:center; margin-bottom:0.75rem;"><span class="tech-tag">JavaScript</span><span class="tech-tag">REST API</span><span class="tech-tag">OAuth 2.0</span><span class="tech-tag">Node.js</span></div>
+                <div class="btn-container">
+                  <button class="btn btn-color-2 project-btn" onclick="window.open('https://github.com/', '_blank')">GitHub</button>
+                  <button class="btn btn-color-2 project-btn" onclick="window.open('https://github.com/', '_blank')">Live Demo</button>
+                </div>
+              </div>
+            
+              <div class="details-container color-container">
+                <div class="project-img-container">
+                  <img src="assets/images/project-3.svg" alt="CloudSync Task Canvas" class="project-img" />
+                </div>
+                <h2 class="experience-sub-title project-title">CloudSync Task Canvas</h2>
+                <p class="project-desc">A lightweight agile Kanban workflow board featuring smooth drag-and-drop, label filtering, and offline persistence.</p>
+                <div class="tech-tags" style="justify-content:center; margin-bottom:0.75rem;"><span class="tech-tag">JavaScript</span><span class="tech-tag">CSS Grid</span><span class="tech-tag">IndexedDB</span><span class="tech-tag">Responsive</span></div>
+                <div class="btn-container">
+                  <button class="btn btn-color-2 project-btn" onclick="window.open('https://github.com/', '_blank')">GitHub</button>
+                  <button class="btn btn-color-2 project-btn" onclick="window.open('https://github.com/', '_blank')">Live Demo</button>
+                </div>
+              </div>
+            
+          </div>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Next section" class="icon arrow" onclick="scrollToSection('contact')" />
+      </section>
+
+      
+      <!-- CONTACT -->
+      <section id="contact">
+        <p class="section__text__p1">Get in Touch</p>
+        <h1 class="title">Contact Me</h1>
+        <p class="contact-description">Open to supply chain, logistics, and analytics opportunities where I can turn data into better operational decisions.</p>
+        <div class="contact-info-upper-container">
+          
+            <div class="contact-info-container">
+              <img src="assets/icons/email.svg" alt="Email" class="icon contact-icon" />
+              <p><a href="mailto:vignesh.lgscm@gmail.com">vignesh.lgscm@gmail.com</a></p>
+            </div>
+          
+          
+            <div class="contact-info-container">
+              <img src="assets/icons/linkedin.svg" alt="LinkedIn" class="icon contact-icon" />
+              <p><a href="https://www.linkedin.com/in/vigneshseetha/" target="_blank" rel="noopener">LinkedIn</a></p>
+            </div>
+          
+          
+            <div class="contact-info-container">
+              <img src="assets/icons/github.svg" alt="GitHub" class="icon contact-icon" />
+              <p><a href="https://github.com/Aseran-13" target="_blank" rel="noopener">GitHub</a></p>
+            </div>
+          
+        </div>
+        
+        <div class="contact-footer">
+          <p>Copyright © 2026 Vignesh Seetharaman. All Rights Reserved.</p>
+        </div>
+        <img src="assets/icons/arrow.svg" alt="Back to top" class="icon arrow arrow-up" onclick="scrollToSection('profile')" title="Back to top" />
+      </section>
+    </main>
+
+    <script>
+      function toggleMenu() {
+        const m = document.querySelector(".menu-links");
+        const i = document.querySelector(".hamburger-icon");
+        if (m && i) { m.classList.toggle("open"); i.classList.toggle("open"); }
+      }
+
+      function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a3d40"/>
+      <stop offset="100%" stop-color="#181719"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="200" fill="url(#bgGrad)"/>
+  <!-- Subtle circular rings -->
+  <circle cx="200" cy="200" r="185" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="4"/>
+  <!-- Stylized avatar silhouette -->
+  <circle cx="200" cy="155" r="65" fill="#f3f4f6"/>
+  <path d="M100 340 C 110 250, 150 240, 200 240 C 250 240, 290 250, 300 340 Z" fill="#e5e7eb"/>
+  <circle cx="200" cy="155" r="58" fill="#e0e7ff"/>
+  <!-- Glasses / smart developer detail -->
+  <circle cx="180" cy="150" r="14" fill="none" stroke="#374151" stroke-width="3"/>
+  <circle cx="220" cy="150" r="14" fill="none" stroke="#374151" stroke-width="3"/>
+  <line x1="194" y1="150" x2="206" y2="150" stroke="#374151" stroke-width="3"/>
+  <!-- Friendly smile -->
+  <path d="M188 178 Q 200 190, 212 178" fill="none" stroke="#4b5563" stroke-width="3" stroke-linecap="round"/>
+</svg>
